@@ -1,0 +1,157 @@
+import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
+import User from "../models/User.js"
+
+// 🔐 Password rules: min 8 chars, 1 number, 1 special char
+const passwordRegex =
+  /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,}$/
+
+// HELPER: generate JWT token
+const generateToken = (userId) => {
+  return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN || "1d",
+  })
+}
+
+// REGISTER
+export const register = async (req, res) => {
+  try {
+    const { name, email, password } = req.body
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" })
+    }
+
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+        message:
+          "Password must be at least 8 characters, include a number and a special character",
+      })
+    }
+
+    const existingUser = await User.findOne({ email })
+    if (existingUser) {
+      return res.status(409).json({ message: "Email already registered" })
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10)
+    const user = await User.create({ name, email, password: hashedPassword })
+
+    const token = generateToken(user._id)
+
+    res.status(201).json({
+      message: "User registered successfully",
+      token,
+      user: { id: user._id, name: user.name, email: user.email },
+    })
+  } catch (error) {
+    console.error("Register error:", error)
+    res.status(500).json({ message: "Server error" })
+  }
+}
+
+// LOGIN
+export const login = async (req, res) => {
+  try {
+    const { email, password } = req.body
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required" })
+    }
+
+    const user = await User.findOne({ email })
+    if (!user) {
+      return res.status(401).json({ message: "Invalid credentials" })
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password)
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid credentials" })
+    }
+
+    const token = generateToken(user._id)
+
+    res.json({
+      message: "Login successful",
+      token,
+      user: { id: user._id, name: user.name, email: user.email },
+    })
+  } catch (error) {
+    console.error("Login error:", error)
+    res.status(500).json({ message: "Server error" })
+  }
+}
+
+// GET PROFILE
+export const getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password")
+    if (!user) return res.status(404).json({ message: "User not found" })
+    res.json(user)
+  } catch (error) {
+    console.error("Get profile error:", error)
+    res.status(500).json({ message: "Server error" })
+  }
+}
+
+// UPDATE PROFILE
+export const updateProfile = async (req, res) => {
+  try {
+    const { name, email } = req.body
+    const user = await User.findById(req.user.id)
+    if (!user) return res.status(404).json({ message: "User not found" })
+
+    if (email && email !== user.email) {
+      const existingUser = await User.findOne({ email })
+      if (existingUser) {
+        return res.status(409).json({ message: "Email already in use" })
+      }
+    }
+
+    user.name = name || user.name
+    user.email = email || user.email
+
+    await user.save()
+    res.json({ message: "Profile updated successfully", user })
+  } catch (error) {
+    console.error("Update profile error:", error)
+    res.status(500).json({ message: "Server error" })
+  }
+}
+
+// CHANGE PASSWORD
+export const changePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({ message: "Both old and new passwords are required" })
+    }
+
+    if (!passwordRegex.test(newPassword)) {
+      return res.status(400).json({
+        message:
+          "New password must be at least 8 characters, include a number and a special character",
+      })
+    }
+
+    const user = await User.findById(req.user.id)
+    if (!user) return res.status(404).json({ message: "User not found" })
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password)
+    if (!isMatch) {
+      return res.status(401).json({ message: "Old password is incorrect" })
+    }
+
+    user.password = await bcrypt.hash(newPassword, 10)
+    await user.save()
+
+    res.json({ message: "Password changed successfully" })
+  } catch (error) {
+    console.error("Change password error:", error)
+    res.status(500).json({ message: "Server error" })
+  }
+}
+
+// LOGOUT (for JWT, just respond)
+export const logout = async (req, res) => {
+  res.json({ message: "Logout successful" })
+}
