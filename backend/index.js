@@ -4,6 +4,7 @@ import dotenv from "dotenv"
 import connectDB from "./config/db.js"
 import authRoutes from "./routes/auth.js"
 import urlRoutes from "./routes/url.js"
+import userRoutes from "./routes/user.js"
 
 
 
@@ -24,6 +25,7 @@ app.use(express.json())
 app.use("/api/auth", authRoutes)
 app.use("/api/url", urlRoutes)
 app.use("/", urlRoutes)
+app.use("/api/user", userRoutes)
 
 await connectDB()
 
