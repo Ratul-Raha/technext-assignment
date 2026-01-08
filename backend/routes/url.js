@@ -3,7 +3,6 @@ import {
   createUrl,
   getUrls,
   deleteUrl,
-  getUrlStats,
   redirectUrl,
 } from "../controllers/urlController.js"
 import { verifyToken } from "../middleware/auth.js"
