@@ -238,6 +238,48 @@ td {
   background: #f3f4f6;
 }
 
+/*Original Url tooltip*/
+.original-url {
+  max-width: 300px;
+  cursor: pointer;
+}
+
+.original-url.collapsed {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.original-url.expanded {
+  white-space: normal;
+  word-break: break-all;
+}
+
+/* Copy to clipboard button */
+
+.short-url-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 260px;        /* adjust based on table width */
+}
+
+.short-url-text {
+  flex: 1;
+  min-width: 0;            /* REQUIRED for ellipsis to work */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.copy-btn {
+  flex-shrink: 0;          /* PREVENT icon from shrinking */
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 2px;
+}
 
 
 
