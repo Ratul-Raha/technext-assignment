@@ -21,9 +21,4 @@ export const deleteUrl = async (id, token) => {
   return res.data
 }
 
-export const getUrlStats = async (id, token) => {
-  const res = await api.get(`/url/${id}/stats`, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
-  return res.data
-}
+

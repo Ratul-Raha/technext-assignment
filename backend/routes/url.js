@@ -14,7 +14,6 @@ const router = express.Router()
 router.post("/", verifyToken, createUrl)             
 router.get("/", verifyToken, getUrls)               
 router.delete("/:id", verifyToken, deleteUrl)       
-router.get("/:id/stats", verifyToken, getUrlStats)
 
 // Public route: redirect short URL to original URL
 router.get("/:code", redirectUrl)                

@@ -120,27 +120,3 @@ export const redirectUrl = async (req, res) => {
   }
 };
 
-// ----------------------------
-// GET URL stats by ID
-// ----------------------------
-export const getUrlStats = async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const { id } = req.params;
-
-    const url = await Url.findOne({ _id: id, userId });
-    if (!url) {
-      return res.status(404).json({ message: "URL not found" });
-    }
-
-    res.json({
-      originalUrl: url.originalUrl,
-      shortUrl: `${process.env.BASE_URL}/${url.shortCode}`,
-      clicks: url.clicks,
-      createdAt: url.createdAt,
-    });
-  } catch (error) {
-    console.error("Get URL stats error:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-};
