@@ -24,6 +24,5 @@ const urlSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-// Prevent OverwriteModelError
 const Url = mongoose.models.Url || mongoose.model("Url", urlSchema)
 export default Url

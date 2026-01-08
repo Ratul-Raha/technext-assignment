@@ -2,11 +2,11 @@ import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import User from "../models/User.js"
 
-// 🔐 Password rules: min 8 chars, 1 number, 1 special char
+// Password rules: min 8 chars, 1 number, 1 special char
 const passwordRegex =
   /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,}$/
 
-// HELPER: generate JWT token
+
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN || "1d",
@@ -38,14 +38,11 @@ export const register = async (req, res) => {
 
     // Set default package info for new user
     const defaultPackage = "Free"
-    const urlLimit = 100 // Free users can create 100 URLs max
 
     const user = await User.create({
       name,
       email,
       password: hashedPassword,
-      package: defaultPackage,
-      urlLimit,
       createdUrlCount: 0,
     })
 
@@ -100,7 +97,6 @@ export const login = async (req, res) => {
   }
 }
 
-// LOGOUT (for JWT, just respond)
 export const logout = async (req, res) => {
   res.json({ message: "Logout successful" })
 }

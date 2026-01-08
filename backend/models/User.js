@@ -35,6 +35,5 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-// Prevent OverwriteModelError
 const User = mongoose.models.User || mongoose.model("User", userSchema)
 export default User

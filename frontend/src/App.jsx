@@ -43,8 +43,6 @@ function App() {
           }
         >
           <Route path="/dashboard" element={<Dashboard />} />
-          {/* <Route path="/links" element={<Links />} />
-          <Route path="/settings" element={<Settings />} /> */}
         </Route>
 
         {/* Catch-all redirect */}

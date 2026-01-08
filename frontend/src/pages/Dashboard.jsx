@@ -33,16 +33,15 @@ export default function Dashboard() {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
-  /* =========================
-     FETCH PROFILE + PACKAGE INFO
-  ========================= */
+  //FETCH PROFILE + PACKAGE INFO
+
   useEffect(() => {
     if (!token) return;
 
     const fetchProfile = async () => {
       try {
         const data = await getProfile(token);
-        setUser(data); // backend sends: { name, email, package, createdUrlCount, urlLimit }
+        setUser(data);
       } catch (err) {
         console.error("Failed to fetch profile", err);
       }
@@ -51,9 +50,8 @@ export default function Dashboard() {
     fetchProfile();
   }, [token]);
 
-  /* =========================
-     FETCH URLS
-  ========================= */
+  //FETCH URLS
+
   useEffect(() => {
     if (!token) return;
 
@@ -69,9 +67,8 @@ export default function Dashboard() {
     fetchUrls();
   }, [token]);
 
-  /* =========================
-     CLOSE AVATAR MENU
-  ========================= */
+  //CLOSE AVATAR MENU
+
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -83,9 +80,8 @@ export default function Dashboard() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  /* =========================
-     CREATE SHORT URL
-  ========================= */
+  // CREATE SHORT URL
+
   const handleShorten = async () => {
     if (!url || !token) return;
 
@@ -100,11 +96,18 @@ export default function Dashboard() {
       // Show backend message
       toast.success(res.data?.message || "URL created successfully");
 
+      try {
+        const data = await getProfile(token);
+        setUser(data); //
+      } catch (err) {
+        console.error("Failed to fetch profile", err);
+      }
+
       // Update user's package info from backend response (if sent)
       if (res.data?.remainingUrls !== undefined && user) {
         setUser((prev) => ({
           ...prev,
-          createdUrlCount: prev.createdUrlCount + 1, // or use backend remainingUrls
+          createdUrlCount: prev.createdUrlCount + 1,
         }));
       }
     } catch (err) {
@@ -115,9 +118,8 @@ export default function Dashboard() {
     }
   };
 
-  /* =========================
-     DELETE URL
-  ========================= */
+  // DELETE URL
+
   const handleDelete = async (id) => {
     if (!token) return;
 
@@ -129,9 +131,8 @@ export default function Dashboard() {
     }
   };
 
-  /* =========================
-     COPY TO CLIPBOARD
-  ========================= */
+  //  COPY TO CLIPBOARD
+
   const handleCopy = async (id, text) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -142,32 +143,28 @@ export default function Dashboard() {
     }
   };
 
-  /* =========================
-     LOGOUT
-  ========================= */
+  // LOGOUT
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/login");
   };
 
-  /* =========================
-     PAGINATION
-  ========================= */
+  //PAGINATION
+
   const totalPages = Math.ceil(links.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedLinks = links.slice(startIndex, startIndex + itemsPerPage);
 
-  /* =========================
-     AVATAR LETTER
-  ========================= */
+  // AVATAR LETTER
+
   const avatarLetter = user?.name
     ? user.name.trim().charAt(0).toUpperCase()
     : "U";
 
-  /* =========================
-     TOGGLE ORIGINAL URL
-  ========================= */
+  // TOGGLE ORIGINAL URL
+
   const toggleExpand = (id) => {
     setExpandedRows((prev) => ({
       ...prev,
@@ -175,9 +172,8 @@ export default function Dashboard() {
     }));
   };
 
-  /* =========================
-     PACKAGE INFO (from backend)
-  ========================= */
+  // PACKAGE INFO (from backend)
+
   const totalAllowed = user?.urlLimit || 100;
   const usedUrls = user?.createdUrls || 0;
   const remainingUrls = totalAllowed - usedUrls;

@@ -1,45 +1,49 @@
-import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
-import "../styles/register.css"
-import { registerUser } from "../services/authService"
-import { toast } from "react-toastify"
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "../styles/register.css";
+import { registerUser } from "../services/authService";
+import { toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Register() {
-  const navigate = useNavigate()
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // Visibility toggles
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!name || !email || !password || !confirmPassword) {
-      toast.error("Please fill all fields")
-      return
+      toast.error("Please fill all fields");
+      return;
     }
 
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match")
-      return
+      toast.error("Passwords do not match");
+      return;
     }
 
     try {
-      setLoading(true)
-      await registerUser({ name, email, password })
-      toast.success("Registered successfully! Redirecting to login...")
-      navigate("/login")
+      setLoading(true);
+      await registerUser({ name, email, password });
+      toast.success("Registered successfully! Redirecting to login...");
+      setTimeout(() => {
+        navigate("/login");
+      }, 500);
     } catch (err) {
-      toast.error(err.response?.data?.message || err.message)
+      toast.error(err.response?.data?.message || err.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="register-container">
@@ -80,8 +84,8 @@ export default function Register() {
                   fill="currentColor"
                   viewBox="0 0 16 16"
                 >
-                  <path d="M13.359 11.238C12.062 12.85 10.18 14 8 14c-2.18 0-4.062-1.15-5.359-2.762a.5.5 0 0 1 0-.476C3.938 9.15 5.82 8 8 8c2.18 0 4.062 1.15 5.359 2.762a.5.5 0 0 1 0 .476z"/>
-                  <path d="M11.701 9.5a3.5 3.5 0 1 0-4.202-4.202L11.701 9.5z"/>
+                  <path d="M13.359 11.238C12.062 12.85 10.18 14 8 14c-2.18 0-4.062-1.15-5.359-2.762a.5.5 0 0 1 0-.476C3.938 9.15 5.82 8 8 8c2.18 0 4.062 1.15 5.359 2.762a.5.5 0 0 1 0 .476z" />
+                  <path d="M11.701 9.5a3.5 3.5 0 1 0-4.202-4.202L11.701 9.5z" />
                 </svg>
               ) : (
                 <svg
@@ -91,8 +95,8 @@ export default function Register() {
                   fill="currentColor"
                   viewBox="0 0 16 16"
                 >
-                  <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM8 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/>
-                  <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z"/>
+                  <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM8 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" />
+                  <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z" />
                 </svg>
               )}
             </span>
@@ -118,8 +122,8 @@ export default function Register() {
                   fill="currentColor"
                   viewBox="0 0 16 16"
                 >
-                  <path d="M13.359 11.238C12.062 12.85 10.18 14 8 14c-2.18 0-4.062-1.15-5.359-2.762a.5.5 0 0 1 0-.476C3.938 9.15 5.82 8 8 8c2.18 0 4.062 1.15 5.359 2.762a.5.5 0 0 1 0 .476z"/>
-                  <path d="M11.701 9.5a3.5 3.5 0 1 0-4.202-4.202L11.701 9.5z"/>
+                  <path d="M13.359 11.238C12.062 12.85 10.18 14 8 14c-2.18 0-4.062-1.15-5.359-2.762a.5.5 0 0 1 0-.476C3.938 9.15 5.82 8 8 8c2.18 0 4.062 1.15 5.359 2.762a.5.5 0 0 1 0 .476z" />
+                  <path d="M11.701 9.5a3.5 3.5 0 1 0-4.202-4.202L11.701 9.5z" />
                 </svg>
               ) : (
                 <svg
@@ -129,8 +133,8 @@ export default function Register() {
                   fill="currentColor"
                   viewBox="0 0 16 16"
                 >
-                  <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM8 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/>
-                  <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z"/>
+                  <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM8 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" />
+                  <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z" />
                 </svg>
               )}
             </span>
@@ -141,10 +145,23 @@ export default function Register() {
           </button>
         </form>
 
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+        />
+
         <p className="register-footer">
           Already have an account? <Link to="/login">Login</Link>
         </p>
       </div>
     </div>
-  )
+  );
 }

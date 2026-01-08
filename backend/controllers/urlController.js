@@ -6,9 +6,8 @@ const generateShortCode = () => {
   return Math.random().toString(36).substring(2, 8);
 };
 
-// ----------------------------
 // CREATE a short URL
-// ----------------------------
+
 export const createUrl = async (req, res) => {
   try {
     const { originalUrl } = req.body;
@@ -18,24 +17,21 @@ export const createUrl = async (req, res) => {
       return res.status(400).json({ message: "Original URL is required" });
     }
 
-    // Validate URL format
     try {
       new URL(originalUrl);
     } catch {
       return res.status(400).json({ message: "Invalid URL format" });
     }
 
-    // Fetch user to check package limits
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
-
+    console.log("user created count:", user.createdUrlCount, "limit:", user.urlLimit);
     if (user.createdUrlCount >= user.urlLimit) {
       return res.status(403).json({
         message: `URL limit reached for your ${user.package} plan`,
       });
     }
 
-    // Generate unique shortCode
     let shortCode = generateShortCode();
     let exists = await Url.findOne({ shortCode });
     while (exists) {
@@ -43,14 +39,12 @@ export const createUrl = async (req, res) => {
       exists = await Url.findOne({ shortCode });
     }
 
-    // Create URL
     const url = await Url.create({
       userId,
       originalUrl,
       shortCode,
     });
 
-    // Increment user's createdUrlCount
     user.createdUrlCount += 1;
     await user.save();
 
@@ -69,9 +63,7 @@ export const createUrl = async (req, res) => {
   }
 };
 
-// ----------------------------
 // GET all URLs for a user
-// ----------------------------
 export const getUrls = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -89,9 +81,7 @@ export const getUrls = async (req, res) => {
   }
 };
 
-// ----------------------------
 // DELETE a URL by ID
-// ----------------------------
 export const deleteUrl = async (req, res) => {
   try {
     const userId = req.user.id
@@ -110,10 +100,7 @@ export const deleteUrl = async (req, res) => {
   }
 }
 
-
-// ----------------------------
 // REDIRECT short URL to original
-// ----------------------------
 export const redirectUrl = async (req, res) => {
   try {
     const { code } = req.params;
