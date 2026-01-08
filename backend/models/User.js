@@ -6,8 +6,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      minlength: 2,
-      maxlength: 50,
     },
     email: {
       type: String,
@@ -19,15 +17,24 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      minlength: 6,
+    },
+    package: {
+      type: String,
+      enum: ["Free", "Pro", "Premium"], // add more packages if needed
+      default: "Free",
+    },
+    urlLimit: {
+      type: Number,
+      default: 100, // Free users can create up to 100 URLs
+    },
+    createdUrlCount: {
+      type: Number,
+      default: 0, // Tracks how many URLs the user has created
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 )
 
-
+// Prevent OverwriteModelError
 const User = mongoose.models.User || mongoose.model("User", userSchema)
-
 export default User

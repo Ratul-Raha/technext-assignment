@@ -5,6 +5,7 @@ import User from "../models/User.js"
    GET PROFILE
    GET /user/profile
 ============================ */
+
 export const getProfile = async (req, res) => {
   try {
     if (!req.user || !req.user.id)
@@ -14,10 +15,18 @@ export const getProfile = async (req, res) => {
     const user = await User.findById(req.user.id).select("-password")
     if (!user) return res.status(404).json({ message: "User not found" })
 
+    // Calculate remaining URL creation chances
+    const remainingUrls = user.urlLimit - user.createdUrlCount
+    const createdUrls = user.createdUrlCount
+   
+
     res.json({
       id: user._id,
       name: user.name,
       email: user.email,
+      package: user.package,          // send user's package (Free/Pro/etc)
+      remainingUrls,    
+      createdUrls,           // send remaining URL creation chances
     })
   } catch (err) {
     console.error("Error in getProfile:", err)

@@ -281,6 +281,41 @@ td {
   padding: 2px;
 }
 
+/* Package Usage Banner */
+
+.package-banner {
+  background: #f0f8ff;
+  border: 1px solid #a0c4ff;
+  padding: 16px;
+  border-radius: 8px;
+  margin: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.package-info,
+.url-usage {
+  font-size: 14px;
+  color: #333;
+}
+
+.progress-bar {
+  background: #e0e0e0;
+  border-radius: 4px;
+  height: 8px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.progress-fill {
+  background: #4a90e2;
+  height: 100%;
+  width: 0%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
 
 
 

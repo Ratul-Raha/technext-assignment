@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import "../styles/dashboard.css";
 
 import { createShortUrl, getUrls, deleteUrl } from "../services/urlService";
-
 import { getProfile } from "../services/userService";
 import moment from "moment";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Dashboard() {
   const [url, setUrl] = useState("");
@@ -33,7 +34,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   /* =========================
-     FETCH PROFILE
+     FETCH PROFILE + PACKAGE INFO
   ========================= */
   useEffect(() => {
     if (!token) return;
@@ -41,7 +42,7 @@ export default function Dashboard() {
     const fetchProfile = async () => {
       try {
         const data = await getProfile(token);
-        setUser(data);
+        setUser(data); // backend sends: { name, email, package, createdUrlCount, urlLimit }
       } catch (err) {
         console.error("Failed to fetch profile", err);
       }
@@ -91,11 +92,24 @@ export default function Dashboard() {
     setLoading(true);
     try {
       const res = await createShortUrl({ originalUrl: url }, token);
-      setLinks((prev) => [res, ...prev]);
+
+      setLinks((prev) => [res.data, ...prev]);
       setUrl("");
       setCurrentPage(1);
+
+      // Show backend message
+      toast.success(res.data?.message || "URL created successfully");
+
+      // Update user's package info from backend response (if sent)
+      if (res.data?.remainingUrls !== undefined && user) {
+        setUser((prev) => ({
+          ...prev,
+          createdUrlCount: prev.createdUrlCount + 1, // or use backend remainingUrls
+        }));
+      }
     } catch (err) {
       console.error("Error creating URL:", err);
+      toast.error(err?.response?.data?.message || "Failed to shorten URL");
     } finally {
       setLoading(false);
     }
@@ -122,10 +136,7 @@ export default function Dashboard() {
     try {
       await navigator.clipboard.writeText(text);
       setCopiedId(id);
-
-      setTimeout(() => {
-        setCopiedId(null);
-      }, 1500);
+      setTimeout(() => setCopiedId(null), 1500);
     } catch (err) {
       console.error("Failed to copy:", err);
     }
@@ -164,8 +175,17 @@ export default function Dashboard() {
     }));
   };
 
+  /* =========================
+     PACKAGE INFO (from backend)
+  ========================= */
+  const totalAllowed = user?.urlLimit || 100;
+  const usedUrls = user?.createdUrls || 0;
+  const remainingUrls = totalAllowed - usedUrls;
+  const progressPercent = Math.min((usedUrls / totalAllowed) * 100, 100);
+
   return (
     <div className="dashboard">
+      <ToastContainer />
       <main className="content">
         {/* Topbar */}
         <header className="topbar">
@@ -187,6 +207,25 @@ export default function Dashboard() {
             )}
           </div>
         </header>
+
+        {/* Package Banner */}
+        {user && (
+          <div className="package-banner">
+            <div className="package-info">
+              <strong>Package:</strong> {user.package}
+            </div>
+            <div className="url-usage">
+              <strong>URLs used:</strong> {usedUrls} / {totalAllowed} (
+              {remainingUrls} remaining)
+            </div>
+            <div className="progress-bar">
+              <div
+                className="progress-fill"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Shorten Box */}
         <section className="shorten-card">
