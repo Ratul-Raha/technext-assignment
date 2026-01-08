@@ -50,6 +50,7 @@ npm install
 ```bash
 nodemon server.js
 or
+nodemon index.js
 ```
 
 ### Frontend
