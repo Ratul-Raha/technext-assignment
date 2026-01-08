@@ -36,6 +36,7 @@ cd technext-assignment
 ```bash
 cd backend
 npm install
+npm install -g nodemon #if nodemon is not available on the machine globally or throws any error
 ```
 
 2. Change the name .env.example to .env
